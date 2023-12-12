@@ -2,13 +2,14 @@
 #include <R_ext/Rdynload.h>
 #include <R_ext/Visibility.h>
 #include "extensions/cmark-gfm-core-extensions.h"
+#include "latex_sourcepos.h"
 
 extern SEXP R_list_extensions(void);
 extern SEXP R_render_markdown(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
   {"R_list_extensions", (DL_FUNC) &R_list_extensions, 0},
-  {"R_render_markdown", (DL_FUNC) &R_render_markdown, 9},
+  {"R_render_markdown", (DL_FUNC) &R_render_markdown, 10},
   {NULL, NULL, 0}
 };
 
@@ -17,4 +18,5 @@ attribute_visible void R_init_commonmark(DllInfo *dll){
   R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
   R_useDynamicSymbols(dll, FALSE);
   R_forceSymbols(dll, TRUE);
+  R_RegisterCCallable("commonmark", "latex_sourcepos", (DL_FUNC) &latex_sourcepos);
 }

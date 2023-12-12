@@ -18,7 +18,8 @@ markdown_html(
   normalize = FALSE,
   sourcepos = FALSE,
   footnotes = FALSE,
-  extensions = FALSE
+  extensions = FALSE,
+  filter = NULL
 )
 
 markdown_xml(
@@ -28,7 +29,8 @@ markdown_xml(
   normalize = FALSE,
   sourcepos = FALSE,
   footnotes = FALSE,
-  extensions = FALSE
+  extensions = FALSE,
+  filter = NULL
 )
 
 markdown_man(
@@ -38,7 +40,8 @@ markdown_man(
   normalize = FALSE,
   footnotes = FALSE,
   width = 0,
-  extensions = FALSE
+  extensions = FALSE,
+  filter = NULL
 )
 
 markdown_commonmark(
@@ -48,7 +51,8 @@ markdown_commonmark(
   normalize = FALSE,
   footnotes = FALSE,
   width = 0,
-  extensions = FALSE
+  extensions = FALSE,
+  filter = NULL
 )
 
 markdown_text(
@@ -58,7 +62,8 @@ markdown_text(
   normalize = FALSE,
   footnotes = FALSE,
   width = 0,
-  extensions = FALSE
+  extensions = FALSE,
+  filter = NULL
 )
 
 markdown_latex(
@@ -68,7 +73,8 @@ markdown_latex(
   normalize = FALSE,
   footnotes = FALSE,
   width = 0,
-  extensions = FALSE
+  extensions = FALSE,
+  filter = NULL
 )
 }
 \arguments{
@@ -88,6 +94,9 @@ regardless of the value given with \code{width}.}
 \item{extensions}{Enables Github extensions. Can be \code{TRUE} (all) \code{FALSE} (none) or a character
 vector with a subset of available \link{extensions}.}
 
+\item{filter}{A two element character vector giving
+package name and export name of a C callable filter.}
+
 \item{width}{Specify wrap width (default 0 = nowrap).}
 }
 \description{
@@ -103,6 +112,12 @@ enabled with the \code{extensions} parameter. See also the manual page on \link{
 When smart punctuation is enabled, straight double and single quotes will be rendered as curly quotes,
 depending on their position. Moreover \verb{--} will be rendered as -- (en-dash), \verb{---} will be
 rendered as --- (em-dash), and \code{...} will be rendered as ... (ellipses).
+
+The experimental \code{filter} parameter identifies a
+function which will be called on the parse tree before
+rendering.  The function should have declaration like
+\code{cmark_node* func (cmark_node *doc);} with the
+\code{cmark_node} definition from \code{src/cmark/cmark-gfm.h}.
 }
 \examples{
 md <- readLines("https://raw.githubusercontent.com/yihui/knitr/master/NEWS.md")

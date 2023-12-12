@@ -12,6 +12,12 @@
 #' depending on their position. Moreover `--` will be rendered as -- (en-dash), `---` will be
 #' rendered as --- (em-dash), and `...` will be rendered as ... (ellipses).
 #'
+#' The experimental `filter` parameter identifies a
+#'  function which will be called on the parse tree before
+#'  rendering.  The function should have declaration like
+#'  `cmark_node* func (cmark_node *root);` with the
+#'  `cmark_node` definition from `src/cmark/cmark-gfm.h`.
+#'
 #' @useDynLib commonmark R_render_markdown
 #' @aliases commonmark markdown
 #' @export
@@ -27,6 +33,8 @@
 #' @param extensions Enables Github extensions. Can be `TRUE` (all) `FALSE` (none) or a character
 #' vector with a subset of available [extensions].
 #' @param width Specify wrap width (default 0 = nowrap).
+#' @param filter A two element character vector giving
+#' package name and export name of a C callable filter.
 #' @examples md <- readLines("https://raw.githubusercontent.com/yihui/knitr/master/NEWS.md")
 #' html <- markdown_html(md)
 #' xml <- markdown_xml(md)
@@ -34,48 +42,52 @@
 #' tex <- markdown_latex(md)
 #' cm <- markdown_commonmark(md)
 #' text <- markdown_text(md)
-markdown_html <- function(text, hardbreaks = FALSE, smart = FALSE, normalize = FALSE, sourcepos = FALSE, footnotes = FALSE, extensions = FALSE){
+markdown_html <- function(text, hardbreaks = FALSE, smart = FALSE, normalize = FALSE, sourcepos = FALSE, footnotes = FALSE, extensions = FALSE, filter = NULL){
   text <- enc2utf8(paste(text, collapse="\n"))
   extensions <- get_extensions(extensions)
-  .Call(R_render_markdown, text, 1L, sourcepos, hardbreaks, smart, normalize, footnotes, 0L, extensions)
+  .Call(R_render_markdown, text, 1L, sourcepos, hardbreaks, smart, normalize, footnotes, 0L, extensions, filter)
 }
 
 #' @export
 #' @rdname commonmark
-markdown_xml <- function(text, hardbreaks = FALSE, smart = FALSE, normalize = FALSE, sourcepos = FALSE, footnotes = FALSE, extensions = FALSE){
+markdown_xml <- function(text, hardbreaks = FALSE, smart = FALSE, normalize = FALSE, sourcepos = FALSE, footnotes = FALSE, extensions = FALSE, filter = NULL){
   text <- enc2utf8(paste(text, collapse="\n"))
   extensions <- get_extensions(extensions)
-  .Call(R_render_markdown, text, 2L, sourcepos, hardbreaks, smart, normalize, footnotes, 0L, extensions)
+  .Call(R_render_markdown, text, 2L, sourcepos, hardbreaks, smart, normalize, footnotes, 0L, extensions, filter)
 }
 
 #' @export
 #' @rdname commonmark
-markdown_man <- function(text, hardbreaks = FALSE, smart = FALSE, normalize = FALSE, footnotes = FALSE, width = 0, extensions = FALSE){
+markdown_man <- function(text, hardbreaks = FALSE, smart = FALSE, normalize = FALSE, footnotes = FALSE, width = 0, extensions = FALSE, filter = NULL){
   text <- enc2utf8(paste(text, collapse="\n"))
   extensions <- get_extensions(extensions)
-  .Call(R_render_markdown, text, 3L, FALSE, hardbreaks, smart, normalize, footnotes, as.integer(width), extensions)
+  .Call(R_render_markdown, text, 3L, FALSE, hardbreaks, smart, normalize, footnotes, as.integer(width), extensions,
+        filter)
 }
 
 #' @export
 #' @rdname commonmark
-markdown_commonmark <- function(text, hardbreaks = FALSE, smart = FALSE, normalize = FALSE, footnotes = FALSE, width = 0, extensions = FALSE){
+markdown_commonmark <- function(text, hardbreaks = FALSE, smart = FALSE, normalize = FALSE, footnotes = FALSE, width = 0, extensions = FALSE, filter = NULL){
   text <- enc2utf8(paste(text, collapse="\n"))
   extensions <- get_extensions(extensions)
-  .Call(R_render_markdown, text, 4L, FALSE, hardbreaks, smart, normalize, footnotes, as.integer(width), extensions)
+  .Call(R_render_markdown, text, 4L, FALSE, hardbreaks, smart, normalize, footnotes, as.integer(width), extensions,
+        filter)
 }
 
 #' @export
 #' @rdname commonmark
-markdown_text <- function(text, hardbreaks = FALSE, smart = FALSE, normalize = FALSE, footnotes = FALSE, width = 0, extensions = FALSE){
+markdown_text <- function(text, hardbreaks = FALSE, smart = FALSE, normalize = FALSE, footnotes = FALSE, width = 0, extensions = FALSE, filter = NULL){
   text <- enc2utf8(paste(text, collapse="\n"))
   extensions <- get_extensions(extensions)
-  .Call(R_render_markdown, text, 5L, FALSE, hardbreaks, smart, normalize, footnotes, as.integer(width), extensions)
+  .Call(R_render_markdown, text, 5L, FALSE, hardbreaks, smart, normalize, footnotes, as.integer(width), extensions,
+        filter)
 }
 
 #' @export
 #' @rdname commonmark
-markdown_latex <- function(text, hardbreaks = FALSE, smart = FALSE, normalize = FALSE, footnotes = FALSE, width = 0, extensions = FALSE){
+markdown_latex <- function(text, hardbreaks = FALSE, smart = FALSE, normalize = FALSE, footnotes = FALSE, width = 0, extensions = FALSE, filter = NULL){
   text <- enc2utf8(paste(text, collapse="\n"))
   extensions <- get_extensions(extensions)
-  .Call(R_render_markdown, text, 6L, FALSE, hardbreaks, smart, normalize, footnotes, as.integer(width), extensions)
+  .Call(R_render_markdown, text, 6L, FALSE, hardbreaks, smart, normalize, footnotes, as.integer(width), extensions,
+        filter)
 }

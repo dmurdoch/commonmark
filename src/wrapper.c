@@ -41,7 +41,8 @@ static char* print_document(cmark_node *document, writer_format writer, int opti
 }
 
 SEXP R_render_markdown(SEXP text, SEXP format, SEXP sourcepos, SEXP hardbreaks, SEXP smart,
-                       SEXP normalize, SEXP footnotes, SEXP width, SEXP extensions) {
+                       SEXP normalize, SEXP footnotes, SEXP width, SEXP extensions,
+                       SEXP filter) {
 
   /* input validation */
   if(!Rf_isString(text))
@@ -60,6 +61,9 @@ SEXP R_render_markdown(SEXP text, SEXP format, SEXP sourcepos, SEXP hardbreaks, 
     Rf_error("Argument 'footnotes' must be logical.");
   if(!Rf_isInteger(width))
     Rf_error("Argument 'width' must be integer.");
+  if(!Rf_isNull(filter) &&
+     (!Rf_isString(filter) || Rf_length(filter) != 2))
+    Rf_error("Argument 'filter' must be length 2 character.");
 
   /* combine options */
   int options = CMARK_OPT_DEFAULT;
@@ -85,6 +89,13 @@ SEXP R_render_markdown(SEXP text, SEXP format, SEXP sourcepos, SEXP hardbreaks, 
   cmark_parser_feed(parser, CHAR(input), LENGTH(input));
   cmark_node *doc = cmark_parser_finish(parser);
   cmark_parser_free(parser);
+
+  if(!Rf_isNull(filter)) {
+    typedef cmark_node* (*filter_func) (cmark_node *doc);
+    filter_func fun = (filter_func) R_GetCCallable(CHAR(STRING_ELT(filter, 0)),
+                                                   CHAR(STRING_ELT(filter, 1)));
+    doc = fun(doc);
+  }
 
   /* render output format */
   char *output = print_document(doc, Rf_asInteger(format), options, Rf_asInteger(width));
