@@ -23,6 +23,7 @@ cmark_node* latex_sourcepos(cmark_node *root) {
     if ((type == CMARK_NODE_TEXT ||
          type == CMARK_NODE_CODE ||
          type == CMARK_NODE_CODE_BLOCK ||
+         type == CMARK_NODE_HTML_BLOCK ||
          type == CMARK_NODE_HTML_INLINE) &&
         lastline != cur->start_line) {
 
@@ -30,8 +31,8 @@ cmark_node* latex_sourcepos(cmark_node *root) {
       cmark_node *sourcepos = cmark_node_new(CMARK_NODE_CUSTOM_INLINE);
 
       char buffer[100];
-      snprintf(buffer, 100, "\\sourcepos{%d:%d}",
-                 cur->start_line, cur->start_column);
+      snprintf(buffer, 100, "\\datapos{%d}",
+                 cur->start_line);
 
       cmark_node_set_on_enter(sourcepos, buffer);
       cmark_node_insert_before(cur, sourcepos);
